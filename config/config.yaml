@@ -1,0 +1,4 @@
+header: ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'income']
+trainingPath: load/adult.data
+evaluationPath: load/adult.test
+removeIndex: 13
