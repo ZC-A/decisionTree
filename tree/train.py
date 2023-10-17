@@ -46,7 +46,9 @@ def find_best_split(train_data, feature_ids):
 
         logging.info('best split attr: {}, attr value: {}, Gini value: {}'.format(best_split_att, best_split_attr, str(min(gini_splits))))
 
-        return best_split_att, best_split_attr
+        attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
+
+        return best_split_att, best_split_attr, attr_data, other_data
     except Exception as e:
         logging.error(str(e))
         logging.error('calculate error')
