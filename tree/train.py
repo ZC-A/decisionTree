@@ -6,35 +6,7 @@ from config import conf
 
 header = conf.get('header')
 
-class TreeNode:
-    def __init__(self):
-        self.feature_id = -1
-        self.feature_value = None
-        self.left = None
-        self.right = None
-        self.label = None
-        self.data = None
-
-# 初始化树根节点，data属性为train_data
-def init_tree(train_data):
-    root = TreeNode()
-    root.data = train_data
-    return root      
-
-def train(train_data,feature_ids,tree_node):
-    #获取split的返回值
-    result = find_best_split(train_data, feature_ids)
-    best_split_att = result[0]
-    best_split_attr = result[1]
-    attr_data = result[2]
-    other_data = result[3]
-
-    #构造右子树根节点
-    tree_node = TreeNode()
-    tree_node.feature_id=feature_ids
-    tree_node.data=other_data
-    tree_node.lable=1
-    logging.info('tree_node feature_id: {}, feature_value: {}'.format(tree_node.feature_id,  tree_node.feature_value))
+# def train(train_data, ):
 
 
 def find_best_split(train_data, feature_ids):
