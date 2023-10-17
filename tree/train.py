@@ -1,11 +1,26 @@
 from collections import Counter
 import logging
 from config import conf
+from tree.structure import node
 
 
 header = conf.get('header')
 
-# def train(train_data, ):
+
+def train(train_data, feature_ids):
+    best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
+    tree_node = node()
+    tree_node.feature_id = header.index(best_split_att)
+    tree_node.feature_value = best_split_attr
+
+    labels = [attr_data[i][-1] for i in range(len(attr_data))]
+    attr_labels_count = Counter(labels)
+
+    if len(attr_labels_count) == 1:
+        tree_node.left = node()
+        tree_node.left.isleaf = True
+        tree_node.label = attr_labels_count.keys()[0]
+
 
 
 def find_best_split(train_data, feature_ids):

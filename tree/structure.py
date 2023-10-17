@@ -5,3 +5,4 @@ class node():
         self.left = None
         self.right = None
         self.label = None
+        self.isleaf = False
