@@ -13,7 +13,6 @@ def train(train_data, feature_ids):
     labels_count = Counter(labels)
 
     same_attr = True
-
     for feature_id in feature_ids:
         attr = [train_data[i][feature_id] for i in range(len(train_data))]
         attr_count = Counter(attr)
@@ -27,19 +26,25 @@ def train(train_data, feature_ids):
         tree_node.isleaf = True
         tree_node.label = list(labels_count.keys())[0]   # 返回唯一标签值
         return tree_node
-    elif same_attr or len(train_data) < 10:  # 返回剩余数据中标签的众数
+    elif len(train_data) == 0:
+        return None
+    elif same_attr or len(train_data) < 10 or len(feature_ids) == 1:  # 返回剩余数据中标签的众数
         tree_node.isleaf = True
         tree_node.label = max(labels_count.keys(), key=labels_count.get)
         return tree_node
 
+
+
     best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
-    feature_index = header.index(best_split_att)
-    feature_ids_copy = copy.deepcopy(feature_ids)
     tree_node = node()
     tree_node.feature_id = header.index(best_split_att)
     tree_node.feature_value = best_split_attr
-    tree_node.left = train(attr_data, feature_ids_copy.remove(feature_index))
+    feature_ids_copy = copy.deepcopy(feature_ids)
+    feature_ids_copy.remove(header.index(best_split_att))
+    # print(feature_id)
+    tree_node.left = train(attr_data, feature_ids_copy)
     tree_node.right = train(other_data, feature_ids)
+    return tree_node
 
 
 def find_best_split(train_data, feature_ids):
