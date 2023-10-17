@@ -8,7 +8,6 @@ from tree.structure import node
 from tree.train import find_best_split
 from tree.train import train
 from config import conf
-from pprint import pprint
 
 
 def levelOrder(root: [node]) -> List[List[int]]:
@@ -26,6 +25,7 @@ def levelOrder(root: [node]) -> List[List[int]]:
         if level:
             list1.append(level)
     return list1
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(filename)s : line %(lineno)s %(funcName)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')

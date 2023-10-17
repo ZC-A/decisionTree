@@ -9,6 +9,8 @@ header = conf.get('header')
 
 
 def train(train_data, feature_ids):
+    if not train_data:
+        return None
     labels = [train_data[i][-1] for i in range(len(train_data))]
     labels_count = Counter(labels)
 
@@ -26,14 +28,10 @@ def train(train_data, feature_ids):
         tree_node.isleaf = True
         tree_node.label = list(labels_count.keys())[0]   # 返回唯一标签值
         return tree_node
-    elif len(train_data) == 0:
-        return None
-    elif same_attr or len(train_data) < 10 or len(feature_ids) == 1:  # 返回剩余数据中标签的众数
+    elif len(feature_ids) == 1 or same_attr or len(train_data) < 100:  # 返回剩余数据中标签的众数
         tree_node.isleaf = True
         tree_node.label = max(labels_count.keys(), key=labels_count.get)
         return tree_node
-
-
 
     best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
     tree_node = node()
