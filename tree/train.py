@@ -17,7 +17,7 @@ def train(train_data, feature_ids):
         tree_node.isleaf = True
         tree_node.label = labels_count.keys()[0]
         return tree_node
-    elif
+    elif aaa
 
 
     best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
