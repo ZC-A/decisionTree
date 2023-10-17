@@ -1,3 +1,4 @@
+import copy
 from collections import Counter
 import logging
 from config import conf
@@ -32,10 +33,12 @@ def train(train_data, feature_ids):
         return tree_node
 
     best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
+    feature_index = header.index(best_split_att)
+    feature_ids_copy = copy.deepcopy(feature_ids)
     tree_node = node()
     tree_node.feature_id = header.index(best_split_att)
     tree_node.feature_value = best_split_attr
-    tree_node.left = train(attr_data, feature_ids)
+    tree_node.left = train(attr_data, feature_ids_copy.remove(feature_index))
     tree_node.right = train(other_data, feature_ids)
 
 
