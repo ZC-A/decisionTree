@@ -2,7 +2,8 @@ import copy
 from collections import Counter
 import logging
 from config import conf
-import structure
+from tree.structure import node
+
 
 
 header = conf.get('header')
@@ -81,7 +82,7 @@ def find_best_split(train_data, feature_ids):
         best_split_att = header[feature_id]
         best_split_attr = attr_value
 
-        logging.info('best split attr: {}, attr value: {}, Gini value: {}'.format(best_split_att, best_split_attr, str(min(gini_splits))))
+        #logging.info('best split attr: {}, attr value: {}, Gini value: {}'.format(best_split_att, best_split_attr, str(min(gini_splits))))
 
         attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
 
@@ -102,11 +103,11 @@ def test(data, tree_node,feature_ids):
         att_vals = [data[tree_node.feature_id]]  # 获得当前特征
         label = [data[-1]]  # 获取标签
         if tree_node.isleaf:
-            if tree_node.lable==label:
+            if tree_node.label==label:
                     return 1
-            if att_vals==tree_node.feature_value :
+        if att_vals==tree_node.feature_value :
                 tree_node=test(data, tree_node.left,feature_ids)
-            else:
+        else:
                 tree_node=test(data, tree_node.right,feature_ids)
         return 0
 
@@ -117,5 +118,5 @@ def recursive(eva_data, tree_node,feature_ids):
         sum=0
         for i in range(length):
             data = eva_data[i]
-            sum+=test(eva_data, tree_node,feature_ids)
-        return sum/length
+            sum+=test(data, tree_node,feature_ids)
+        return sum

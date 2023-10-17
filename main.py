@@ -5,8 +5,8 @@ from load.load import load_data
 import logging
 
 from tree.structure import node
-from tree.train import find_best_split
-from tree.train import init_tree
+from tree.train import test
+from tree.train import recursive
 from tree.train import train
 from tree.train import train
 from config import conf
@@ -33,4 +33,4 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(filename)s : line %(lineno)s %(funcName)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     train_data, eva_data = load_data()
     root = train(train_data, conf.get('feature_ids'))
-    print(levelOrder(root))
+    print(recursive(eva_data, root, conf.get('feature_ids')))
