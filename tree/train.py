@@ -3,9 +3,38 @@ import logging
 from config import conf
 
 
+
 header = conf.get('header')
 
-# def train(train_data, ):
+class TreeNode:
+    def __init__(self):
+        self.feature_id = -1
+        self.feature_value = None
+        self.left = None
+        self.right = None
+        self.label = None
+        self.data = None
+
+# 初始化树根节点，data属性为train_data
+def init_tree(train_data):
+    root = TreeNode()
+    root.data = train_data
+    return root      
+
+def train(train_data,feature_ids,tree_node):
+    #获取split的返回值
+    result = find_best_split(train_data, feature_ids)
+    best_split_att = result[0]
+    best_split_attr = result[1]
+    attr_data = result[2]
+    other_data = result[3]
+
+    #构造右子树根节点
+    tree_node = TreeNode()
+    tree_node.feature_id=feature_ids
+    tree_node.data=other_data
+    tree_node.lable=1
+    logging.info('tree_node feature_id: {}, feature_value: {}'.format(tree_node.feature_id,  tree_node.feature_value))
 
 
 def find_best_split(train_data, feature_ids):
@@ -48,10 +77,14 @@ def find_best_split(train_data, feature_ids):
 
         attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
 
+        # best_split_att 最佳分割属性
+        # best_split_attr 最佳分割属性值
+        # attr_data 左叶子节点
+        # other_data 右子树
         return best_split_att, best_split_attr, attr_data, other_data
     except Exception as e:
         logging.error(str(e))
         logging.error('calculate error')
 
 
-# def build_tree():
+
