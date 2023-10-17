@@ -1,9 +1,7 @@
 from collections import deque
-from typing import Optional, List
-
+from typing import List
 from load.load import load_data
 import logging
-
 from tree.structure import node
 from tree.train import test
 from tree.train import recursive

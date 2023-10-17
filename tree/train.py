@@ -41,8 +41,12 @@ def train(train_data, feature_ids):
     feature_ids_copy = copy.deepcopy(feature_ids)
     feature_ids_copy.remove(header.index(best_split_att))
     # print(feature_id)
-    tree_node.left = train(attr_data, feature_ids_copy)
-    tree_node.right = train(other_data, feature_ids)
+    dummy = node()
+    dummy.isleaf = True
+    dummy.label = max(labels_count.keys(), key=labels_count.get)
+    l, r = train(attr_data, feature_ids_copy), train(other_data, feature_ids)
+    tree_node.left = l if l else dummy
+    tree_node.right = r if r else dummy
     return tree_node
 
 
