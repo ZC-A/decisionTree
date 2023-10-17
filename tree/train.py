@@ -1,7 +1,8 @@
 from collections import Counter
 import logging
+from config import conf
 
-# def train(train_data):
+# def train(train_data, ):
 
 
 def find_best_split(train_data, feature_ids):
@@ -11,7 +12,7 @@ def find_best_split(train_data, feature_ids):
     gini_splits = []
 
     for i in range(n):
-        att_vals = [train_data[j][i] for j in range(len(train_data))]  # 获得每个特征的值
+        att_vals = [train_data[j][feature_ids[i]] for j in range(len(train_data))]  # 获得每个特征的值
         att_count = Counter(att_vals)  # 使用 Counter 统计
         gini_vals = []
         nr_subsets = []
@@ -29,6 +30,11 @@ def find_best_split(train_data, feature_ids):
         gs = sum((nr_subsets[x] / d) * gini_vals[x] for x in range(len(nr_subsets)))
         gini_splits.append(gs)
 
+    best_split_att = feature_ids[gini_splits.index(min(gini_splits))]
+
     logging.info('best split: {} Gini value: {}'.format(str(gini_splits.index(min(gini_splits))), str(min(gini_splits))))
 
     return gini_splits.index(min(gini_splits))
+
+
+# def build_tree():
