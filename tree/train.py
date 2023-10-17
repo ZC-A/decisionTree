@@ -29,6 +29,7 @@ def train(train_data, feature_ids):
     elif same_attr or len(train_data) < 10:  # 返回剩余数据中标签的众数
         tree_node.isleaf = True
         tree_node.label = max(labels_count.keys(), key=labels_count.get)
+        return tree_node
 
     best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
     tree_node = node()
