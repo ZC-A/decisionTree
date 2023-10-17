@@ -2,53 +2,54 @@ import copy
 from collections import Counter
 import logging
 from config import conf
-
 from tree.structure import node
-
-
 
 header = conf.get('header')
 
 
 def train(train_data, feature_ids):
-    if not train_data:
-        return None
-    labels = [train_data[i][-1] for i in range(len(train_data))]
-    labels_count = Counter(labels)
+    try:
+        if not train_data:
+            return None
+        labels = [train_data[i][-1] for i in range(len(train_data))]
+        labels_count = Counter(labels)
 
-    same_attr = True
-    for feature_id in feature_ids:
-        attr = [train_data[i][feature_id] for i in range(len(train_data))]
-        attr_count = Counter(attr)
-        if len(attr_count) != 1:
-            same_attr = False
-            break
+        same_attr = True
+        for feature_id in feature_ids:
+            attr = [train_data[i][feature_id] for i in range(len(train_data))]
+            attr_count = Counter(attr)
+            if len(attr_count) != 1:
+                same_attr = False
+                break
 
-    tree_node = node()  # 检查两个条件 1.是否标签唯一  2.所有属性相同或剩余训练数据长度小于某个特定值
+        tree_node = node()  # 检查两个条件 1.是否标签唯一  2.所有属性相同或剩余训练数据长度小于某个特定值
 
-    if len(labels_count) == 1:
-        tree_node.isleaf = True
-        tree_node.label = list(labels_count.keys())[0]   # 返回唯一标签值
+        if len(labels_count) == 1:
+            tree_node.isleaf = True
+            tree_node.label = list(labels_count.keys())[0]   # 返回唯一标签值
+            return tree_node
+        elif len(feature_ids) == 1 or same_attr or len(train_data) < 100:  # 返回剩余数据中标签的众数
+            tree_node.isleaf = True
+            tree_node.label = max(labels_count.keys(), key=labels_count.get)
+            return tree_node
+
+        best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
+        tree_node = node()
+        tree_node.feature_id = header.index(best_split_att)
+        tree_node.feature_value = best_split_attr
+        feature_ids_copy = copy.deepcopy(feature_ids)
+        feature_ids_copy.remove(header.index(best_split_att))
+        # print(feature_id)
+        dummy = node()
+        dummy.isleaf = True
+        dummy.label = max(labels_count.keys(), key=labels_count.get)
+        l, r = train(attr_data, feature_ids_copy), train(other_data, feature_ids)
+        tree_node.left = l if l else dummy
+        tree_node.right = r if r else dummy
         return tree_node
-    elif len(feature_ids) == 1 or same_attr or len(train_data) < 100:  # 返回剩余数据中标签的众数
-        tree_node.isleaf = True
-        tree_node.label = max(labels_count.keys(), key=labels_count.get)
-        return tree_node
-
-    best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
-    tree_node = node()
-    tree_node.feature_id = header.index(best_split_att)
-    tree_node.feature_value = best_split_attr
-    feature_ids_copy = copy.deepcopy(feature_ids)
-    feature_ids_copy.remove(header.index(best_split_att))
-    # print(feature_id)
-    dummy = node()
-    dummy.isleaf = True
-    dummy.label = max(labels_count.keys(), key=labels_count.get)
-    l, r = train(attr_data, feature_ids_copy), train(other_data, feature_ids)
-    tree_node.left = l if l else dummy
-    tree_node.right = r if r else dummy
-    return tree_node
+    except Exception as e:
+        logging.error(str(e))
+        logging.error('train failed')
 
 
 def find_best_split(train_data, feature_ids):
@@ -87,7 +88,7 @@ def find_best_split(train_data, feature_ids):
         best_split_att = header[feature_id]
         best_split_attr = attr_value
 
-        #logging.info('best split attr: {}, attr value: {}, Gini value: {}'.format(best_split_att, best_split_attr, str(min(gini_splits))))
+        logging.info('best split attr: {}, attr value: {}, Gini value: {}'.format(best_split_att, best_split_attr, str(min(gini_splits))))
 
         attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
 
