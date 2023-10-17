@@ -6,7 +6,29 @@ from config import conf
 
 header = conf.get('header')
 
-# def train(train_data, ):
+
+def train(train_data, feature_ids):
+    labels = [train_data[i][-1] for i in range(len(train_data))]
+    labels_count = Counter(labels)
+
+    tree_node = node()
+
+    if len(labels_count) == 1:
+        tree_node.isleaf = True
+        tree_node.label = labels_count.keys()[0]
+        return tree_node
+    elif
+
+
+    best_split_att, best_split_attr, attr_data, other_data = find_best_split(train_data, feature_ids)
+    tree_node = node()
+    tree_node.feature_id = header.index(best_split_att)
+    tree_node.feature_value = best_split_attr
+    tree.node.left = train(attr_data, feature_ids)
+    tree_node.right = train(other_data, feature_ids)
+
+
+
 
 
 def find_best_split(train_data, feature_ids):
