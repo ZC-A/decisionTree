@@ -1,3 +1,4 @@
+import copy
 from collections import Counter
 import logging
 from config import conf
@@ -8,11 +9,12 @@ header = conf.get('header')
 
 
 def train(train_data, feature_ids):
+    if not train_data:
+        return None
     labels = [train_data[i][-1] for i in range(len(train_data))]
     labels_count = Counter(labels)
 
     same_attr = True
-
     for feature_id in feature_ids:
         attr = [train_data[i][feature_id] for i in range(len(train_data))]
         attr_count = Counter(attr)
@@ -26,7 +28,7 @@ def train(train_data, feature_ids):
         tree_node.isleaf = True
         tree_node.label = list(labels_count.keys())[0]   # 返回唯一标签值
         return tree_node
-    elif same_attr or len(train_data) < 10:  # 返回剩余数据中标签的众数
+    elif len(feature_ids) == 1 or same_attr or len(train_data) < 100:  # 返回剩余数据中标签的众数
         tree_node.isleaf = True
         tree_node.label = max(labels_count.keys(), key=labels_count.get)
         return tree_node
@@ -35,15 +37,12 @@ def train(train_data, feature_ids):
     tree_node = node()
     tree_node.feature_id = header.index(best_split_att)
     tree_node.feature_value = best_split_attr
+    feature_ids_copy = copy.deepcopy(feature_ids)
+    feature_ids_copy.remove(header.index(best_split_att))
+    # print(feature_id)
+    tree_node.left = train(attr_data, feature_ids_copy)
     tree_node.right = train(other_data, feature_ids)
-    new_feature_ids=feature_ids.copy()
-    new_feature_ids.remove(best_split_att)
-    tree_node.left = train(attr_data, new_feature_ids)
-
     return tree_node
-    
-
-
 
 
 def find_best_split(train_data, feature_ids):
