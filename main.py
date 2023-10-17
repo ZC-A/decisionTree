@@ -1,11 +1,8 @@
 from collections import deque
-from typing import Optional, List
-
+from typing import List
 from load.load import load_data
 import logging
-
 from tree.structure import node
-from tree.train import find_best_split
 from tree.train import train
 from config import conf
 
