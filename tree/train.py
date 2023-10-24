@@ -5,6 +5,7 @@ from config import conf
 from tree.structure import node
 
 header = conf.get('header')
+feature_type = conf.get('feature_type')
 
 
 def train(train_data, feature_ids):
@@ -65,20 +66,36 @@ def find_best_split(train_data, feature_ids):
             att_vals = [train_data[j][feature_ids[i]] for j in range(len(train_data))]  # 获得当前特征 每个训练样本的值
             att_count = Counter(att_vals)  # 使用 Counter 统计
 
-            # 计算每一个特征值的基尼系数
-            for attribute in att_count.keys():
-                att_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if att_vals[i] == attribute]  # 找出和当前特征值相同的子集
-                other_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if att_vals[i] != attribute]  # 找出和当前特征值不同的子集
-                labels_of_subset = [att_subset[i][1] for i in range(len(att_subset))]  # 获得特征值相同子集的标签
-                labels_of_others = [other_subset[i][1] for i in range(len(other_subset))]  # 获得特征值不同的子集的标签
-                attr_len = len(att_subset)
-                subsets_count = Counter(labels_of_subset)  # 统计标签数量 Y/N
-                gini = (1 - sum((v / attr_len)**2 for v in subsets_count.values())) * attr_len / length  # 只有两种标签 等价计算出 1 - (p_x**2 + p_y**2)
-                others_count = Counter(labels_of_others)  # 同理
-                gini += (1 - sum((v / (length - attr_len))**2 for v in others_count.values())) * (length - attr_len) / length
-                gini_splits.append(gini)
-                attr_values.append(attribute)
-                gini_feature.append(feature_ids[i])
+            if feature_type[feature_ids[i]] != 'Integer':  # 离散值
+                # 计算每一个特征值的基尼系数
+                for attribute in att_count.keys():
+                    att_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if att_vals[i] == attribute]  # 找出和当前特征值相同的子集
+                    other_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if att_vals[i] != attribute]  # 找出和当前特征值不同的子集
+                    labels_of_subset = [att_subset[i][1] for i in range(len(att_subset))]  # 获得特征值相同子集的标签
+                    labels_of_others = [other_subset[i][1] for i in range(len(other_subset))]  # 获得特征值不同的子集的标签
+                    attr_len = len(att_subset)
+                    subsets_count = Counter(labels_of_subset)  # 统计标签数量 Y/N
+                    gini = (1 - sum((v / attr_len)**2 for v in subsets_count.values())) * attr_len / length  # 只有两种标签 等价计算出 1 - (p_x**2 + p_y**2)
+                    others_count = Counter(labels_of_others)  # 同理
+                    gini += (1 - sum((v / (length - attr_len))**2 for v in others_count.values())) * (length - attr_len) / length
+                    gini_splits.append(gini)
+                    attr_values.append(attribute)
+                    gini_feature.append(feature_ids[i])
+            else:
+                for attribute in att_count.keys():   # 连续值
+                    logging.info('consecu')
+                    att_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) <= int(attribute)]  # 找出 小于等于当前特征值相同的子集
+                    other_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) > int(attribute)]  # 找出 大于当前特征值不同的子集
+                    labels_of_subset = [att_subset[i][1] for i in range(len(att_subset))]  # 获得特征值相同子集的标签
+                    labels_of_others = [other_subset[i][1] for i in range(len(other_subset))]  # 获得特征值不同的子集的标签
+                    attr_len = len(att_subset)
+                    subsets_count = Counter(labels_of_subset)  # 统计标签数量 Y/N
+                    gini = (1 - sum((v / attr_len)**2 for v in subsets_count.values())) * attr_len / length  # 只有两种标签 等价计算出 1 - (p_x**2 + p_y**2)
+                    others_count = Counter(labels_of_others)  # 同理
+                    gini += (1 - sum((v / (length - attr_len))**2 for v in others_count.values())) * (length - attr_len) / length
+                    gini_splits.append(gini)
+                    attr_values.append(attribute)
+                    gini_feature.append(feature_ids[i])
 
         gini_v = min(gini_splits)
         ind = gini_splits.index(gini_v)
@@ -90,7 +107,11 @@ def find_best_split(train_data, feature_ids):
 
         logging.info('best split attr: {}, attr value: {}, Gini value: {}'.format(best_split_att, best_split_attr, str(min(gini_splits))))
 
-        attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
+        if feature_type[feature_id] != 'Integer':
+            attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
+
+        else:
+            attr_data, other_data = [train_data[i] for i in range(length) if int(train_data[i][feature_id]) <= int(attr_value)], [train_data[i] for i in range(length) if train_data[i][feature_id] > int(attr_value)]
 
         # best_split_att 最佳分割属性
         # best_split_attr 最佳分割属性值
