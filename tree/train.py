@@ -82,11 +82,11 @@ def find_best_split(train_data, feature_ids):
                     attr_values.append(attribute)
                     gini_feature.append(feature_ids[i])
             else:
-                att_list = list(map(int, list(att_count.keys())))
+                att_list = list(map(int, list(att_count.keys())))  # 连续值 做 等分切割
                 max_value = max(att_list)
                 min_value = min(att_list)
-                step = (max_value - min_value) // 10 if (max_value - min_value) > 10 else 1
-                for val in range(min_value, max_value, step):
+                step = (max_value - min_value) // 10 if (max_value - min_value) > 10 else 1  # 若不满足等份则说明总数小于阈值 直接遍历
+                for val in range(min_value, max_value + 1, step):
                     att_subset = [[int(att_vals[i]), labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) <= val]  # 找出 小于等于当前特征值相同的子集
                     other_subset = [[int(att_vals[i]), labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) > val]  # 找出 大于当前特征值不同的子集
                     labels_of_subset = [att_subset[i][1] for i in range(len(att_subset))]  # 获得特征值相同子集的标签
@@ -125,4 +125,3 @@ def find_best_split(train_data, feature_ids):
         logging.error(str(e))
         logging.error('calculate error')
         exit(1)
-
