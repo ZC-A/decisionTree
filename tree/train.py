@@ -82,10 +82,13 @@ def find_best_split(train_data, feature_ids):
                     attr_values.append(attribute)
                     gini_feature.append(feature_ids[i])
             else:
-                for attribute in att_count.keys():   # 连续值
-                    logging.info('consecu')
-                    att_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) <= int(attribute)]  # 找出 小于等于当前特征值相同的子集
-                    other_subset = [[att_vals[i], labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) > int(attribute)]  # 找出 大于当前特征值不同的子集
+                att_list = list(map(int, list(att_count.keys())))
+                max_value = max(att_list)
+                min_value = min(att_list)
+                step = (max_value - min_value) // 10 if (max_value - min_value) > 10 else 1
+                for val in range(min_value, max_value, step):
+                    att_subset = [[int(att_vals[i]), labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) <= val]  # 找出 小于等于当前特征值相同的子集
+                    other_subset = [[int(att_vals[i]), labels[i]] for i in range(len(att_vals)) if int(att_vals[i]) > val]  # 找出 大于当前特征值不同的子集
                     labels_of_subset = [att_subset[i][1] for i in range(len(att_subset))]  # 获得特征值相同子集的标签
                     labels_of_others = [other_subset[i][1] for i in range(len(other_subset))]  # 获得特征值不同的子集的标签
                     attr_len = len(att_subset)
@@ -94,7 +97,7 @@ def find_best_split(train_data, feature_ids):
                     others_count = Counter(labels_of_others)  # 同理
                     gini += (1 - sum((v / (length - attr_len))**2 for v in others_count.values())) * (length - attr_len) / length
                     gini_splits.append(gini)
-                    attr_values.append(attribute)
+                    attr_values.append(val)
                     gini_feature.append(feature_ids[i])
 
         gini_v = min(gini_splits)
@@ -111,7 +114,7 @@ def find_best_split(train_data, feature_ids):
             attr_data, other_data = [train_data[i] for i in range(length) if train_data[i][feature_id] == attr_value], [train_data[i] for i in range(length) if train_data[i][feature_id] != attr_value]
 
         else:
-            attr_data, other_data = [train_data[i] for i in range(length) if int(train_data[i][feature_id]) <= int(attr_value)], [train_data[i] for i in range(length) if train_data[i][feature_id] > int(attr_value)]
+            attr_data, other_data = [train_data[i] for i in range(length) if int(train_data[i][feature_id]) <= int(attr_value)], [train_data[i] for i in range(length) if int(train_data[i][feature_id]) > int(attr_value)]
 
         # best_split_att 最佳分割属性
         # best_split_attr 最佳分割属性值
@@ -121,5 +124,5 @@ def find_best_split(train_data, feature_ids):
     except Exception as e:
         logging.error(str(e))
         logging.error('calculate error')
-
+        exit(1)
 
