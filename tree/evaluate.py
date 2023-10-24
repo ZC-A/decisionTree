@@ -9,7 +9,7 @@ def test(data, tree_node, feature_ids):
         else:
             return 0
     if tree_node.feature_type == 'Integer':
-        if att_vals <= tree_node.feature_value:
+        if int(att_vals) <= tree_node.feature_value:
             num = test(data, tree_node.left, feature_ids)
         else:
             num = test(data, tree_node.right, feature_ids)
