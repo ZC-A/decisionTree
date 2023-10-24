@@ -8,11 +8,19 @@ def test(data, tree_node, feature_ids):
             return 1
         else:
             return 0
-    if att_vals == tree_node.feature_value:
-        num = test(data, tree_node.left, feature_ids)
+    if tree_node.feature_type == 'Integer':
+        if att_vals <= tree_node.feature_value:
+            num = test(data, tree_node.left, feature_ids)
+        else:
+            num = test(data, tree_node.right, feature_ids)
+        return num
     else:
-        num = test(data, tree_node.right, feature_ids)
-    return num
+        if att_vals == tree_node.feature_value:
+            num = test(data, tree_node.left, feature_ids)
+        else:
+            num = test(data, tree_node.right, feature_ids)
+        return num
+
 
 
 def evaluate(eva_data, tree_node, feature_ids):

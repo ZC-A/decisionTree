@@ -38,6 +38,7 @@ def train(train_data, feature_ids):
         tree_node = node()
         tree_node.feature_id = header.index(best_split_att)
         tree_node.feature_value = best_split_attr
+        tree_node.feature_type = feature_type[tree_node.feature_id]
         feature_ids_copy = copy.deepcopy(feature_ids)
         feature_ids_copy.remove(header.index(best_split_att))
         # print(feature_id)
