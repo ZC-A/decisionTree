@@ -37,7 +37,7 @@ def load_data():
         logging.error('loading fail')
 
 
-def load_tree(tree):
+def load_tree():
     try:
         with open('tree.pickle', 'rb') as f:  # 二进制读写决策树
             tree = pickle.load(f)
@@ -45,6 +45,7 @@ def load_tree(tree):
     except Exception as e:
         logging.error(str(e))
         logging.error('loading decision tree failed')
+        return None
 
 
 def write_tree(tree):
