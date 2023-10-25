@@ -39,6 +39,7 @@ then you can train a new tree and evaluate this decision tree using `adult.test`
 
 1. - `tree.pickle`:decision trees can be written into `tree.pickle`
    - `output.txt`: visualize binary decision tree and describe the decision tree built from the Adult training set
+   - `res.csv`: the test dataset and it's evaluation result, the last column represents whether this row evaluated correctly
 2. 
     - the decision tree built from the Adult training set can be found in the output of `train.py`, it shows the best split attribute and its GINI value for each iteration.
     - evaluation correct number: 12694
