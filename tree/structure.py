@@ -20,8 +20,8 @@ def print_tree(current_node:node, nameattr='feature_value', left_child='left', r
     if hasattr(current_node, nameattr) is not None:
         name = lambda node: getattr(node, nameattr)
 
-    up = current_node.left
-    down = current_node.right
+    up = getattr(current_node, left_child)
+    down = getattr(current_node, right_child)
 
     if up is not None:
         next_last = 'up'
@@ -45,5 +45,5 @@ def print_tree(current_node:node, nameattr='feature_value', left_child='left', r
 
     if down is not None:
         next_last = 'down'
-        next_indent = '{0}{1}{2}'.format(indent, ' ' if 'up' in last else '|', ' ' * len(str("["+header[current_node.feature_id]+":"+str(current_node.feature_value)+"]")))
+        next_indent = '{0}{1}{2}'.format(indent, ' ' if 'down' in last else '|', ' ' * len(str("["+header[current_node.feature_id]+":"+str(current_node.feature_value)+"]")))
         print_tree(down, nameattr, left_child, right_child, next_indent, next_last)
